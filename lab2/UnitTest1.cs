@@ -6,14 +6,14 @@ namespace BinaryFlag.UnitTests
 {
     public class BinaryFlagConstructor_test_limitValues
     {
-        uint min = 2;
+        ulong min = 2;
         ulong max = 17179868704;
 
         [Fact]
         public void Test_Constructor_lessMin()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() => { 
-                MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(min-1); 
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(min - 1);
             });
         }
 
@@ -27,7 +27,7 @@ namespace BinaryFlag.UnitTests
         [Fact]
         public void Test_Constructor_moreMin()
         {
-            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(min+1);
+            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(min + 1);
             Assert.True(testBinaryFlag is MultipleBinaryFlag);
         }
 
@@ -56,7 +56,7 @@ namespace BinaryFlag.UnitTests
     public class BinaryFlagMethods_test
     {
         [Fact]
-        public void Test_after_inizialization_true() 
+        public void Test_after_inizialization_true()
         {
             MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(5);
             Assert.True(testBinaryFlag.GetFlag());
@@ -90,8 +90,8 @@ namespace BinaryFlag.UnitTests
         public void Test_setting_wrong_position()
         {
             MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(5, false);
-            Assert.Throws<ArgumentOutOfRangeException>(() => { 
-                testBinaryFlag.SetFlag(5); 
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                testBinaryFlag.SetFlag(5);
             });
         }
 
@@ -99,8 +99,8 @@ namespace BinaryFlag.UnitTests
         public void Test_resetting_wrong_position()
         {
             MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(5);
-            Assert.Throws<ArgumentOutOfRangeException>(() => { 
-                testBinaryFlag.ResetFlag(5); 
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                testBinaryFlag.ResetFlag(5);
             });
         }
 
