@@ -15,7 +15,7 @@ namespace TestPasswordHashingUtils_Zavad
         static Type hasherType = typeof(PasswordHasher);
         FieldInfo currSalt = hasherType.GetField("_salt", BindingFlags.Static | BindingFlags.NonPublic);
         FieldInfo currAdler = hasherType.GetField("_modAdler32", BindingFlags.Static | BindingFlags.NonPublic);
-    
+
         [TestMethod]
         public void TestNullInSaltNullInAdler()     //route [0, 1, 5, 7]
         {
@@ -31,9 +31,10 @@ namespace TestPasswordHashingUtils_Zavad
         {
             currSalt.SetValue(myPasswordHasher, defaultSalt);
             currAdler.SetValue(myPasswordHasher, defaultAdler);
-            PasswordHasher.Init("", 5);
+            uint modAdler32 = 5;
+            PasswordHasher.Init("", modAdler32);
             Assert.AreEqual(defaultSalt, currSalt.GetValue(myPasswordHasher).ToString());
-            Assert.AreEqual(5, Convert.ToInt32(currAdler.GetValue(myPasswordHasher)));
+            Assert.AreEqual(modAdler32, currAdler.GetValue(myPasswordHasher));
         }
 
         [TestMethod]
@@ -41,8 +42,9 @@ namespace TestPasswordHashingUtils_Zavad
         {
             currSalt.SetValue(myPasswordHasher, defaultSalt);
             currAdler.SetValue(myPasswordHasher, defaultAdler);
-            PasswordHasher.Init("saaaalt", 0);
-            Assert.AreEqual("saaaalt", currSalt.GetValue(myPasswordHasher).ToString());
+            string salt = "saaaalt";
+            PasswordHasher.Init(salt, 0);
+            Assert.AreEqual(salt, currSalt.GetValue(myPasswordHasher).ToString());
             Assert.AreEqual(defaultAdler, currAdler.GetValue(myPasswordHasher));
         }
 
@@ -51,9 +53,11 @@ namespace TestPasswordHashingUtils_Zavad
         {
             currSalt.SetValue(myPasswordHasher, defaultSalt);
             currAdler.SetValue(myPasswordHasher, defaultAdler);
-            PasswordHasher.Init("saaaalt", 10);
-            Assert.AreEqual("saaaalt", currSalt.GetValue(myPasswordHasher).ToString());
-            Assert.AreEqual(10, Convert.ToInt32(currAdler.GetValue(myPasswordHasher)));
+            string salt = "saaaalt";
+            uint modAdler32 = 10;
+            PasswordHasher.Init(salt, modAdler32);
+            Assert.AreEqual(salt, currSalt.GetValue(myPasswordHasher).ToString());
+            Assert.AreEqual(modAdler32, currAdler.GetValue(myPasswordHasher));
         }
 
         [TestMethod]
@@ -75,9 +79,10 @@ namespace TestPasswordHashingUtils_Zavad
             currAdler.SetValue(myPasswordHasher, defaultAdler);
             string saltWithException = "¢€𐍈";
             string encodedSalt = Encoding.ASCII.GetString(Encoding.Unicode.GetBytes(saltWithException));
-            PasswordHasher.Init(saltWithException, 15);
+            uint modAdler32 = 15;
+            PasswordHasher.Init(saltWithException, modAdler32);
             Assert.AreEqual(encodedSalt, currSalt.GetValue(myPasswordHasher).ToString());
-            Assert.AreEqual(15, Convert.ToInt32(currAdler.GetValue(myPasswordHasher)));
+            Assert.AreEqual(modAdler32, currAdler.GetValue(myPasswordHasher));
         }
     }
 
@@ -102,8 +107,9 @@ namespace TestPasswordHashingUtils_Zavad
         {
             currSalt.SetValue(myPasswordHasher, defaultSalt);
             currAdler.SetValue(myPasswordHasher, defaultAdler);
-            string before = PasswordHasher.GetHash("passwd");
-            string after = PasswordHasher.GetHash("passwd", "another salt", 3);
+            string password = "passwd";
+            string before = PasswordHasher.GetHash(password);
+            string after = PasswordHasher.GetHash(password, "another salt", 3);
             Assert.IsNotNull(after);
             Assert.AreNotEqual(before, after);
         }
@@ -115,12 +121,14 @@ namespace TestPasswordHashingUtils_Zavad
             currAdler.SetValue(myPasswordHasher, defaultAdler);
             string password = "¢€𐍈";
             string encodedPassword = Encoding.ASCII.GetString(Encoding.Unicode.GetBytes(password));
-            string before = PasswordHasher.GetHash(password);
-            string hash = PasswordHasher.GetHash(password, "another salt", 3);
-            string hashFromEncoded = PasswordHasher.GetHash(encodedPassword, "another salt", 3);
-            Assert.IsNotNull(hash);
-            Assert.AreNotEqual(before, hash);
-            Assert.AreEqual(hash, hashFromEncoded);
+            string salt = "another salt";
+            uint modAdler32 = 15;
+            string hashBefore = PasswordHasher.GetHash(password);
+            string hashAfter = PasswordHasher.GetHash(password, salt, modAdler32);
+            string hashFromEncoded = PasswordHasher.GetHash(encodedPassword, salt, modAdler32);
+            Assert.IsNotNull(hashAfter);
+            Assert.AreNotEqual(hashBefore, hashAfter);
+            Assert.AreEqual(hashAfter, hashFromEncoded);
         }
     }
 
@@ -133,38 +141,46 @@ namespace TestPasswordHashingUtils_Zavad
         static Type hasherType = typeof(PasswordHasher);
         FieldInfo currSalt = hasherType.GetField("_salt", BindingFlags.Static | BindingFlags.NonPublic);
         FieldInfo currAdler = hasherType.GetField("_modAdler32", BindingFlags.Static | BindingFlags.NonPublic);
-        
+
         [TestMethod]
         public void TestNonAsciiStringInSaltNumberInAdler()
         {
             currSalt.SetValue(myPasswordHasher, defaultSalt);
             currAdler.SetValue(myPasswordHasher, defaultAdler);
-            PasswordHasher.Init("络", 15); ;
-            Assert.AreNotEqual("络", currSalt.GetValue(myPasswordHasher).ToString());
-            Assert.AreEqual(15, Convert.ToInt32(currAdler.GetValue(myPasswordHasher)));
+            uint modAdler32 = 2;
+            string salt = "络";
+            PasswordHasher.Init(salt, modAdler32);
+            Assert.AreNotEqual(salt, currSalt.GetValue(myPasswordHasher).ToString());
+            Assert.AreEqual(modAdler32, currAdler.GetValue(myPasswordHasher));
         }
 
         [TestMethod]
         public void TestHashingSamePasswordsWithDefaultParams()
         {
-            string hash1 = PasswordHasher.GetHash("passwd");
-            string hash2 = PasswordHasher.GetHash("passwd");
+            string password = "passwd";
+            string hash1 = PasswordHasher.GetHash(password);
+            string hash2 = PasswordHasher.GetHash(password);
             Assert.AreEqual(hash1, hash2);
         }
 
         [TestMethod]
         public void TestHashingSamePasswordsWithSameParams()
         {
-            string hash1 = PasswordHasher.GetHash("passwd", "another salt", 3);
-            string hash2 = PasswordHasher.GetHash("passwd", "another salt", 3);
+            string password = "passwd";
+            string salt = "another interesting salt";
+            uint modAdler32 = 3;
+            string hash1 = PasswordHasher.GetHash(password, salt, modAdler32);
+            string hash2 = PasswordHasher.GetHash(password, salt, modAdler32);
             Assert.AreEqual(hash1, hash2);
         }
 
         [TestMethod]
         public void TestHashingDiffPasswordsWithSameParams()
         {
-            string hash1 = PasswordHasher.GetHash("passwd1", "another salt", 3);
-            string hash2 = PasswordHasher.GetHash("passwd2", "another salt", 3);
+            string salt = "another cool salt";
+            uint modAdler32 = 4;
+            string hash1 = PasswordHasher.GetHash("passwd1", salt, modAdler32);
+            string hash2 = PasswordHasher.GetHash("passwd2", salt, modAdler32);
             Assert.AreNotEqual(hash1, hash2);
         }
     }
