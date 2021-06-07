@@ -89,18 +89,20 @@ namespace BinaryFlag.UnitTests
         [Fact]
         public void Test_setting_wrong_position()
         {
-            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(5, false);
+            uint length = 5;
+            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(length, false);
             Assert.Throws<ArgumentOutOfRangeException>(() => {
-                testBinaryFlag.SetFlag(5);
+                testBinaryFlag.SetFlag(length);
             });
         }
 
         [Fact]
         public void Test_resetting_wrong_position()
         {
-            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(5);
+            uint length = 5;
+            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(length);
             Assert.Throws<ArgumentOutOfRangeException>(() => {
-                testBinaryFlag.ResetFlag(5);
+                testBinaryFlag.ResetFlag(length);
             });
         }
 
@@ -115,10 +117,11 @@ namespace BinaryFlag.UnitTests
         [Fact]
         public void Test_after_double_setting()
         {
-            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(2, false);
-            testBinaryFlag.SetFlag(0);
-            testBinaryFlag.SetFlag(0);
-            testBinaryFlag.ResetFlag(1);
+            MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(2);
+            uint pos = 0;
+            testBinaryFlag.SetFlag(pos);
+            testBinaryFlag.SetFlag(pos);
+            testBinaryFlag.ResetFlag(pos);
             Assert.False(testBinaryFlag.GetFlag());
         }
 
@@ -126,9 +129,10 @@ namespace BinaryFlag.UnitTests
         public void Test_after_double_resetting()
         {
             MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(2);
-            testBinaryFlag.ResetFlag(1);
-            testBinaryFlag.ResetFlag(1);
-            testBinaryFlag.SetFlag(1);
+            uint pos = 1;
+            testBinaryFlag.ResetFlag(pos);
+            testBinaryFlag.ResetFlag(pos);
+            testBinaryFlag.SetFlag(pos);
             Assert.True(testBinaryFlag.GetFlag());
         }
 
@@ -136,8 +140,9 @@ namespace BinaryFlag.UnitTests
         public void Test_after_switching_true()
         {
             MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(2);
-            testBinaryFlag.ResetFlag(0);
-            testBinaryFlag.SetFlag(0);
+            uint pos = 0;
+            testBinaryFlag.ResetFlag(pos);
+            testBinaryFlag.SetFlag(pos);
             Assert.True(testBinaryFlag.GetFlag());
         }
 
@@ -145,8 +150,9 @@ namespace BinaryFlag.UnitTests
         public void Test_after_switching_false()
         {
             MultipleBinaryFlag testBinaryFlag = new MultipleBinaryFlag(2);
-            testBinaryFlag.SetFlag(1);
-            testBinaryFlag.ResetFlag(1);
+            uint pos = 1;
+            testBinaryFlag.SetFlag(pos);
+            testBinaryFlag.ResetFlag(pos);
             Assert.False(testBinaryFlag.GetFlag());
         }
 
