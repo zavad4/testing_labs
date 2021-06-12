@@ -20,11 +20,11 @@ namespace Zavodovska_lab4
         [Fact]
         public void TestDeleteCredentials()
         {
-            string login = "qwerty";
+            string login = "poiuyt";
             string hashedPassword = PasswordHasher.GetHash("a1'");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
             Assert.False(db.CheckCredentials(login, hashedPassword));
         }
 
@@ -34,7 +34,7 @@ namespace Zavodovska_lab4
             string login = "qwerty";
             string hashedPassword = PasswordHasher.GetHash("a1'");
             Assert.False(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
             Assert.False(db.CheckCredentials(login, hashedPassword));
         }
 
@@ -43,9 +43,9 @@ namespace Zavodovska_lab4
         {
             string login = "aaa";
             string hashedPassword = PasswordHasher.GetHash("bbb");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -53,9 +53,9 @@ namespace Zavodovska_lab4
         {
             string login = "ыэъ";
             string hashedPassword = PasswordHasher.GetHash("эээ");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -63,9 +63,9 @@ namespace Zavodovska_lab4
         {
             string login = "привітики.";
             string hashedPassword = PasswordHasher.GetHash("ЇЄ");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -73,9 +73,9 @@ namespace Zavodovska_lab4
         {
             string login = "aaa123";
             string hashedPassword = PasswordHasher.GetHash("4567890");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -83,9 +83,9 @@ namespace Zavodovska_lab4
         {
             string login = "$'€_/@#";
             string hashedPassword = PasswordHasher.GetHash("{<->]");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace Zavodovska_lab4
             string hashedPassword = PasswordHasher.GetHash("🐬🐳🦩");
             db.AddCredentials(login, hashedPassword);
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -103,9 +103,9 @@ namespace Zavodovska_lab4
         {
             string login = "भारत";
             string hashedPassword = PasswordHasher.GetHash("网络");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
         }
 
         [Fact]
@@ -113,18 +113,47 @@ namespace Zavodovska_lab4
         {
             string login = "";
             string hashedPassword = PasswordHasher.GetHash("passwd");
-            db.AddCredentials(login, hashedPassword);
+            Assert.False(db.AddCredentials(login, hashedPassword));
             Assert.False(db.CheckCredentials(login, hashedPassword));
         }
 
         [Fact]
         public void TestEmptyPassword()
         {
-            string login = "qwerty";
+            string login = "lkjgfs";
             string hashedPassword = PasswordHasher.GetHash("");
-            db.AddCredentials(login, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPassword));
-            db.DeleteCredentials(login, hashedPassword);
+            Assert.True(db.DeleteCredentials(login, hashedPassword));
+        }
+
+        [Fact]
+        public void TestAddExistingLogin()
+        {
+            string login = "a61%';";
+            string hashedPassword1 = PasswordHasher.GetHash("dL&*m");
+            string hashedPassword2 = PasswordHasher.GetHash("sdj829L");
+            Assert.True(db.AddCredentials(login, hashedPassword1));
+            Assert.False(db.AddCredentials(login, hashedPassword2));
+            Assert.True(db.CheckCredentials(login, hashedPassword1));
+            Assert.False(db.CheckCredentials(login, hashedPassword2));
+            Assert.True(db.DeleteCredentials(login, hashedPassword1));
+        }
+
+        [Fact]
+        public void TestUpdateExistingLogin()
+        {
+            string login1 = "login";
+            string login2 = "another_login";
+            string hashedPassword1 = PasswordHasher.GetHash("l[ala");
+            string hashedPassword2 = PasswordHasher.GetHash("ooooh");
+            Assert.True(db.AddCredentials(login1, hashedPassword1));
+            Assert.True(db.AddCredentials(login2, hashedPassword2));
+            Assert.True(db.CheckCredentials(login1, hashedPassword1));
+            Assert.True(db.CheckCredentials(login2, hashedPassword2));
+            Assert.False(db.UpdateCredentials(login2, hashedPassword2, login1, hashedPassword1));
+            Assert.True(db.DeleteCredentials(login1, hashedPassword1));
+            Assert.True(db.DeleteCredentials(login2, hashedPassword2));
         }
 
         [Fact]
@@ -135,7 +164,7 @@ namespace Zavodovska_lab4
             string hashedPassword = PasswordHasher.GetHash("dsk*jl");
             string hashedPasswordModified = PasswordHasher.GetHash("jkdsjk48");
             db.AddCredentials(login, hashedPassword);
-            db.UpdateCredentials(login, hashedPassword, loginModified, hashedPasswordModified);
+            Assert.True(db.UpdateCredentials(login, hashedPassword, loginModified, hashedPasswordModified));
             Assert.False(db.CheckCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(loginModified, hashedPasswordModified));
             db.DeleteCredentials(loginModified, hashedPasswordModified);
@@ -144,11 +173,11 @@ namespace Zavodovska_lab4
         [Fact]
         public void TestUpdateOnlyLogin()
         {
-            string login = "qwerty";
+            string login = "hello";
             string loginModified = "zxcvbn";
             string hashedPassword = PasswordHasher.GetHash("asdfgh");
-            db.AddCredentials(login, hashedPassword);
-            db.UpdateCredentials(login, hashedPassword, loginModified, hashedPassword);
+            Assert.True(db.AddCredentials(login, hashedPassword));
+            Assert.True(db.UpdateCredentials(login, hashedPassword, loginModified, hashedPassword));
             Assert.False(db.CheckCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(loginModified, hashedPassword));
             db.DeleteCredentials(loginModified, hashedPassword);
@@ -157,11 +186,11 @@ namespace Zavodovska_lab4
         [Fact]
         public void TestUpdateOnlyPassword()
         {
-            string login = "qwerty";
+            string login = "cvbnm<>";
             string hashedPassword = PasswordHasher.GetHash("a1'");
             string hashedPasswordModified = PasswordHasher.GetHash("b7}");
-            db.AddCredentials(login, hashedPassword);
-            db.UpdateCredentials(login, hashedPassword, login, hashedPasswordModified);
+            Assert.True(db.AddCredentials(login, hashedPassword));
+            Assert.True(db.UpdateCredentials(login, hashedPassword, login, hashedPasswordModified));
             Assert.False(db.CheckCredentials(login, hashedPassword));
             Assert.True(db.CheckCredentials(login, hashedPasswordModified));
             db.DeleteCredentials(login, hashedPasswordModified);
@@ -174,7 +203,7 @@ namespace Zavodovska_lab4
             string loginModified = "zxcv45";
             string hashedPassword = PasswordHasher.GetHash("l)2");
             string hashedPasswordModified = PasswordHasher.GetHash("o&9");
-            db.UpdateCredentials(login, hashedPassword, loginModified, hashedPasswordModified);
+            Assert.False(db.UpdateCredentials(login, hashedPassword, loginModified, hashedPasswordModified));
             Assert.False(db.CheckCredentials(login, hashedPassword));
             Assert.False(db.CheckCredentials(login, hashedPasswordModified));
         }
@@ -330,7 +359,8 @@ namespace Zavodovska_lab4
             {
                 testBinaryFlag.ResetFlag(length + 3);
             }
-            catch(ArgumentOutOfRangeException) {
+            catch (ArgumentOutOfRangeException)
+            {
                 BaseFileWorker.Write(err, path);
                 Assert.True(true);
             }
